@@ -1,4 +1,6 @@
 import { UserIcon } from './UserIcon'
+import { Circle, Clock, MinusCircle } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface Member {
   id: string
@@ -9,6 +11,12 @@ interface Member {
 
 interface MemberListProps {
   members: Member[]
+}
+
+const statusIcons = {
+  online: Circle,
+  away: Clock,
+  offline: MinusCircle,
 }
 
 export function MemberList({ members }: MemberListProps) {
@@ -27,7 +35,19 @@ export function MemberList({ members }: MemberListProps) {
       <h2 className="text-lg font-semibold mb-4">Members</h2>
       {statusOrder.map((status) => (
         <div key={status}>
-          <h3 className="text-sm font-medium text-gray-500 mb-2 capitalize">{status} - {groupedMembers[status]?.length || 0}</h3>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <h3 className="text-sm font-medium text-gray-500 mb-2 capitalize flex items-center cursor-help">
+                  {React.createElement(statusIcons[status], { size: 12, className: 'mr-2' })}
+                  {status} - {groupedMembers[status]?.length || 0}
+                </h3>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{groupedMembers[status]?.length || 0} members {status}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <div className="space-y-2 mb-4">
             {groupedMembers[status]?.map((member) => (
               <div key={member.id} className="flex items-center space-x-2">
