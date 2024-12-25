@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useElementOnScreen } from '../utils/useElementOnScreen'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { User } from 'lucide-react'
 
 interface UserIconProps {
   src: string
@@ -8,6 +11,7 @@ interface UserIconProps {
 }
 
 export function UserIcon({ src, alt, status }: UserIconProps) {
+  const [imageError, setImageError] = useState(false)
   const [containerRef, isVisible] = useElementOnScreen({
     root: null,
     rootMargin: '0px',
@@ -26,23 +30,46 @@ export function UserIcon({ src, alt, status }: UserIconProps) {
     },
   }
 
+  const handleImageError = () => {
+    setImageError(true)
+  }
+
   return (
-    <div ref={containerRef} className="relative">
-      <motion.img
-        src={src}
-        alt={alt}
-        className="w-10 h-10 rounded-full border-2 border-gray-200"
-        initial="hidden"
-        animate={isVisible ? 'visible' : 'hidden'}
-        variants={variants}
-      />
-      {status && (
-        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
-          status === 'online' ? 'bg-green-500' :
-          status === 'away' ? 'bg-yellow-500' : 'bg-gray-500'
-        }`} />
-      )}
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div ref={containerRef} className="relative">
+            <motion.div
+              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center bg-gray-100"
+              initial="hidden"
+              animate={isVisible ? 'visible' : 'hidden'}
+              variants={variants}
+            >
+              {!imageError ? (
+                <img
+                  src={src}
+                  alt={alt}
+                  className="w-full h-full rounded-full object-cover"
+                  onError={handleImageError}
+                />
+              ) : (
+                <User className="w-6 h-6 text-gray-400" />
+              )}
+            </motion.div>
+            {status && (
+              <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
+                status === 'online' ? 'bg-green-500' :
+                status === 'away' ? 'bg-yellow-500' : 'bg-gray-500'
+              }`} />
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{alt}</p>
+          {status && <p className="capitalize">{status}</p>}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 
