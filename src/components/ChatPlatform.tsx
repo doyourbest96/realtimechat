@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { ServerList } from './ServerList'
+import { ChannelList } from './ChannelList'
 import { ChatList } from './ChatList'
 import { MemberList } from './MemberList'
 import { UserIcon } from './UserIcon'
+import { Menu, Users, X } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 
-// More dummy data with fresh image icons
+// Server data
 const servers = [
   { id: '1', name: 'General', icon: 'https://source.unsplash.com/random/80x80?sig=1&icon' },
   { id: '2', name: 'Development', icon: 'https://source.unsplash.com/random/80x80?sig=2&code' },
@@ -18,6 +21,17 @@ const servers = [
   { id: '10', name: 'Gaming', icon: 'https://source.unsplash.com/random/80x80?sig=10&game' },
 ]
 
+// Channel data
+const channels = [
+  { id: '1', name: 'general', isPrivate: false },
+  { id: '2', name: 'random', isPrivate: false },
+  { id: '3', name: 'announcements', isPrivate: false },
+  { id: '4', name: 'project-a', isPrivate: true },
+  { id: '5', name: 'project-b', isPrivate: true },
+  { id: '6', name: 'off-topic', isPrivate: false },
+]
+
+// Message and member data
 const generateMessages = (count: number) => {
   const messages = []
   const statuses = ['online', 'offline', 'away']
@@ -51,6 +65,12 @@ const members = [
 
 export function ChatPlatform() {
   const [activeServerId, setActiveServerId] = useState(servers[0].id)
+  const [activeChannelId, setActiveChannelId] = useState(channels[0].id)
+  const [showChannels, setShowChannels] = useState(true)
+  const [showMembers, setShowMembers] = useState(true)
+
+  const toggleChannels = () => setShowChannels(!showChannels)
+  const toggleMembers = () => setShowMembers(!showMembers)
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -59,19 +79,48 @@ export function ChatPlatform() {
         activeServerId={activeServerId} 
         onServerClick={setActiveServerId} 
       />
+      <div className={`${showChannels ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
+        <ChannelList
+          channels={channels}
+          activeChannelId={activeChannelId}
+          onChannelClick={setActiveChannelId}
+        />
+      </div>
       <div className="flex-1 flex flex-col">
-        <div className="bg-white shadow-md p-4 flex items-center">
-          <h1 className="text-2xl font-bold flex items-center">
-            <UserIcon 
-              src={servers.find(s => s.id === activeServerId)?.icon || ''} 
-              alt={servers.find(s => s.id === activeServerId)?.name || 'Server Icon'} 
-            />
-            <span className="ml-2">{servers.find(s => s.id === activeServerId)?.name || 'Chat Platform'}</span>
-          </h1>
+        <div className="bg-white shadow-md p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" size="icon" onClick={toggleChannels} className="md:hidden">
+              {showChannels ? <X size={24} /> : <Menu size={24} />}
+            </Button>
+            <h1 className="text-2xl font-bold flex items-center space-x-2">
+              <UserIcon 
+                src={servers.find(s => s.id === activeServerId)?.icon || ''} 
+                alt={servers.find(s => s.id === activeServerId)?.name || 'Server Icon'} 
+              />
+              <span>{servers.find(s => s.id === activeServerId)?.name || 'Chat Platform'}</span>
+            </h1>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm" onClick={toggleChannels} className="hidden md:flex items-center space-x-1">
+              <Menu size={16} />
+              <span>{showChannels ? 'Hide' : 'Show'} Channels</span>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={toggleMembers} className="hidden md:flex items-center space-x-1">
+              <Users size={16} />
+              <span>{showMembers ? 'Hide' : 'Show'} Members</span>
+            </Button>
+            <Button variant="ghost" size="icon" onClick={toggleMembers} className="md:hidden">
+              <Users size={24} />
+            </Button>
+          </div>
         </div>
         <div className="flex-1 flex overflow-hidden">
-          <ChatList messages={messages} />
-          <MemberList members={members} />
+          <div className="flex-1 overflow-hidden">
+            <ChatList messages={messages} />
+          </div>
+          <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
+            <MemberList members={members} />
+          </div>
         </div>
       </div>
     </div>
