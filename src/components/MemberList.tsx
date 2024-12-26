@@ -31,10 +31,10 @@ export function MemberList({ members }: MemberListProps) {
   const statusOrder: ('online' | 'away' | 'offline')[] = ['online', 'away', 'offline'];
 
   return (
-    <div className="w-64 bg-gray-100 p-4 overflow-y-auto">
+    <div className="w-64 bg-gray-100 p-4 overflow-y-auto h-full">
       <h2 className="text-lg font-semibold mb-4">Members</h2>
       {statusOrder.map((status) => (
-        <div key={status}>
+        <div key={status} className="mb-4">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -48,7 +48,7 @@ export function MemberList({ members }: MemberListProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <div className="space-y-2 mb-4">
+          <div className="space-y-2">
             {groupedMembers[status]?.map((member) => (
               <div key={member.id} className="flex items-center space-x-2">
                 <UserIcon src={member.avatar} alt={member.name} status={member.status} />
