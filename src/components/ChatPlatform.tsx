@@ -4,6 +4,7 @@ import { ChannelList } from './ChannelList'
 import { ChatList } from './ChatList'
 import { MemberList } from './MemberList'
 import { UserIcon } from './UserIcon'
+import { UserSettings } from './UserSettings'
 import { Menu, Users, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 
@@ -68,34 +69,51 @@ export function ChatPlatform() {
   const [activeChannelId, setActiveChannelId] = useState(channels[0].id)
   const [showChannels, setShowChannels] = useState(true)
   const [showMembers, setShowMembers] = useState(true)
+  const [showSettings, setShowSettings] = useState(false)
+  const [currentUser, setCurrentUser] = useState({
+    id: 'current',
+    name: 'Current User',
+    avatar: 'https://source.unsplash.com/random/80x80?sig=21&portrait',
+    status: 'online' as const
+  })
 
   const toggleChannels = () => setShowChannels(!showChannels)
   const toggleMembers = () => setShowMembers(!showMembers)
+  const openSettings = () => setShowSettings(true)
+  const closeSettings = () => setShowSettings(false)
+
+  const handleSaveSettings = (name: string, avatar: string) => {
+    setCurrentUser(prev => ({ ...prev, name, avatar }))
+    // Here you would typically update the user data on the server
+  }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 min-w-[320px]">
       <ServerList 
         servers={servers} 
         activeServerId={activeServerId} 
         onServerClick={setActiveServerId} 
       />
-      <div className={`${showChannels ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
+      <div className={`${showChannels ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0 w-56 md:w-64`}>
         <ChannelList
           channels={channels}
           activeChannelId={activeChannelId}
           onChannelClick={setActiveChannelId}
+          user={currentUser}
+          onOpenSettings={openSettings}
         />
       </div>
-      <div className="flex-1 flex flex-col">
-        <div className="bg-white shadow-md p-4 flex items-center justify-between">
+      <div className="flex-1 flex flex-col min-w-0">
+        <div className="bg-white shadow-md p-2 md:p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="icon" onClick={toggleChannels} className="md:hidden">
               {showChannels ? <X size={24} /> : <Menu size={24} />}
             </Button>
-            <h1 className="text-2xl font-bold flex items-center space-x-2">
+            <h1 className="text-lg md:text-2xl font-bold flex items-center space-x-2">
               <UserIcon 
                 src={servers.find(s => s.id === activeServerId)?.icon || ''} 
                 alt={servers.find(s => s.id === activeServerId)?.name || 'Server Icon'} 
+                size="sm"
               />
               <span>{servers.find(s => s.id === activeServerId)?.name || 'Chat Platform'}</span>
             </h1>
@@ -123,6 +141,13 @@ export function ChatPlatform() {
           </div>
         </div>
       </div>
+      {showSettings && (
+        <UserSettings
+          user={currentUser}
+          onClose={closeSettings}
+          onSave={handleSaveSettings}
+        />
+      )}
     </div>
   )
 }
