@@ -8,9 +8,10 @@ interface UserIconProps {
   src: string
   alt: string
   status?: 'online' | 'offline' | 'away'
+  size?: 'sm' | 'md' | 'lg'
 }
 
-export function UserIcon({ src, alt, status }: UserIconProps) {
+export function UserIcon({ src, alt, status, size = 'md' }: UserIconProps) {
   const [imageError, setImageError] = useState(false)
   const [containerRef, isVisible] = useElementOnScreen({
     root: null,
@@ -40,7 +41,9 @@ export function UserIcon({ src, alt, status }: UserIconProps) {
         <TooltipTrigger asChild>
           <div ref={containerRef} className="relative">
             <motion.div
-              className="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center bg-gray-100"
+              className={`w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center bg-gray-100 ${
+                size === 'sm' ? 'w-8 h-8' : size === 'lg' ? 'w-12 h-12' : 'w-10 h-10'
+              }`}
               initial="hidden"
               animate={isVisible ? 'visible' : 'hidden'}
               variants={variants}
@@ -57,7 +60,9 @@ export function UserIcon({ src, alt, status }: UserIconProps) {
               )}
             </motion.div>
             {status && (
-              <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${
+              <div className={`absolute bottom-0 right-0 rounded-full border-2 border-white ${
+                size === 'sm' ? 'w-2 h-2' : size === 'lg' ? 'w-4 h-4' : 'w-3 h-3'
+              } ${
                 status === 'online' ? 'bg-green-500' :
                 status === 'away' ? 'bg-yellow-500' : 'bg-gray-500'
               }`} />
