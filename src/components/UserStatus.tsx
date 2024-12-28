@@ -2,6 +2,12 @@ import { useState } from 'react'
 import { UserIcon } from './UserIcon'
 import { Button } from "@/components/ui/button"
 import { Settings } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface UserStatusProps {
   user: {
@@ -22,24 +28,27 @@ export function UserStatus({ user, onOpenSettings }: UserStatusProps) {
   }
 
   return (
-    <div className="bg-gray-700 p-4 flex items-center justify-between">
+    <div className="bg-zinc-900 p-3 flex items-center justify-between">
       <div className="flex items-center space-x-2">
         <UserIcon src={user.avatar} alt={user.name} status={status} />
         <div>
-          <h3 className="text-white font-semibold">{user.name}</h3>
-          <select
-            value={status}
-            onChange={(e) => handleStatusChange(e.target.value as 'online' | 'away' | 'offline')}
-            className="bg-gray-600 text-white text-sm rounded px-1 py-0.5"
-          >
-            <option value="online">Online</option>
-            <option value="away">Away</option>
-            <option value="offline">Offline</option>
-          </select>
+          <h3 className="text-sm font-semibold text-gray-200">{user.name}</h3>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-auto p-0 text-xs text-gray-400 hover:text-gray-200">
+                {status === 'online' ? 'Online' : status === 'away' ? 'Away' : 'Offline'}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleStatusChange('online')}>Online</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange('away')}>Away</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange('offline')}>Offline</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <Button variant="ghost" size="icon" onClick={onOpenSettings}>
-        <Settings size={20} className="text-gray-300" />
+        <Settings size={20} className="text-gray-400" />
       </Button>
     </div>
   )
