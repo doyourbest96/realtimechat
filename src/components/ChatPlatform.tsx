@@ -7,6 +7,7 @@ import { UserIcon } from './UserIcon'
 import { UserSettings } from './UserSettings'
 import { Menu, Users, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
+import { MessageInput } from './MessageInput'
 
 // Server data
 const servers = [
@@ -133,8 +134,9 @@ export function ChatPlatform() {
           </div>
         </div>
         <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden flex flex-col">
             <ChatList messages={messages} />
+            <MessageInput />
           </div>
           <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
             <MemberList members={members} />
