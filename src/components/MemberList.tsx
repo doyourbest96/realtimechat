@@ -31,7 +31,7 @@ export function MemberList({ members }: MemberListProps) {
   const statusOrder: ('online' | 'away' | 'offline')[] = ['online', 'away', 'offline'];
 
   return (
-    <div className="w-64 bg-gray-100 p-4 overflow-y-auto h-full">
+    <div className="w-64 bg-zinc-800 p-4 overflow-y-auto h-full border-l border-zinc-700">
       <h2 className="text-lg font-semibold mb-4">Members</h2>
       {statusOrder.map((status) => (
         <div key={status} className="mb-4">
@@ -50,7 +50,7 @@ export function MemberList({ members }: MemberListProps) {
           </TooltipProvider>
           <div className="space-y-2">
             {groupedMembers[status]?.map((member) => (
-              <div key={member.id} className="flex items-center space-x-2">
+              <div key={member.id} className="flex items-center space-x-2 px-2 py-1 rounded hover:bg-zinc-700/50 cursor-pointer">
                 <UserIcon src={member.avatar} alt={member.name} status={member.status} />
                 <span className="text-sm">{member.name}</span>
               </div>
