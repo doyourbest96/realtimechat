@@ -99,6 +99,7 @@ export function ChatPlatform() {
     avatar: 'https://source.unsplash.com/random/80x80?sig=21&portrait',
     status: 'online' as const
   })
+  const [chatMessages, setChatMessages] = useState(messages)
 
   const toggleChannels = () => setShowChannels(!showChannels)
   const toggleMembers = () => setShowMembers(!showMembers)
@@ -120,15 +121,58 @@ export function ChatPlatform() {
     }
   }
 
+  const handleSendMessage = (content: string) => {
+    const newMessage = {
+      id: Date.now().toString(),
+      userIcon: currentUser.avatar,
+      username: currentUser.name,
+      timestamp: new Date().toISOString(),
+      content,
+      status: currentUser.status,
+      reactions: []
+    }
+    setChatMessages(prev => [...prev, newMessage])
+  }
+
+  const handleReact = (messageId: string, emoji: string) => {
+    setChatMessages(prev => prev.map(msg => {
+      if (msg.id === messageId) {
+        const existingReaction = msg.reactions.find(r => r.emoji === emoji)
+        if (existingReaction) {
+          return {
+            ...msg,
+            reactions: msg.reactions.map(r => r.emoji === emoji ? { ...r, count: r.count + 1, reacted: true } : r)
+          }
+        } else {
+          return {
+            ...msg,
+            reactions: [...msg.reactions, { emoji, count: 1, reacted: true }]
+          }
+        }
+      }
+      return msg
+    }))
+  }
+
+  const handleEdit = (messageId: string, newContent: string) => {
+    setChatMessages(prev => prev.map(msg =>
+      msg.id === messageId ? { ...msg, content: newContent } : msg
+    ))
+  }
+
+  const handleDelete = (messageId: string) => {
+    setChatMessages(prev => prev.filter(msg => msg.id !== messageId))
+  }
+
   const activeServer = servers.find(s => s.id === activeServerId)
   const activeChannel = categories.flatMap(c => c.channels).find(c => c.id === activeChannelId)
   const activeDMUser = dmUsers.find(u => u.id === activeDMUserId)
 
   return (
     <div className="flex h-screen bg-zinc-900 text-gray-100 min-w-[320px]">
-      <ServerList 
-        servers={servers} 
-        activeServerId={activeServerId} 
+      <ServerList
+        servers={servers}
+        activeServerId={activeServerId}
         onServerClick={(id) => {
           setActiveServerId(id)
           setIsDMView(false)
@@ -204,8 +248,13 @@ export function ChatPlatform() {
         </div>
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 overflow-hidden flex flex-col">
-            <ChatList messages={messages} />
-            <MessageInput />
+            <ChatList
+              messages={chatMessages}
+              onReact={handleReact}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+            <MessageInput onSendMessage={handleSendMessage} />
           </div>
           {!isDMView && (
             <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
