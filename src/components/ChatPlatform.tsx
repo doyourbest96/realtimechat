@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ServerList } from './ServerList'
 import { ChannelList } from './ChannelList'
+import { DMList } from './DMList'
 import { ChatList } from './ChatList'
 import { MemberList } from './MemberList'
 import { UserIcon } from './UserIcon'
@@ -21,6 +22,7 @@ const servers = [
 // Channel data
 const categories = [
   {
+    id: '1',
     name: 'General',
     channels: [
       { id: '1', name: 'general', isPrivate: false },
@@ -29,6 +31,7 @@ const categories = [
     ]
   },
   {
+    id: '2',
     name: 'Projects',
     channels: [
       { id: '4', name: 'project-a', isPrivate: true },
@@ -36,12 +39,22 @@ const categories = [
     ]
   },
   {
+    id: '3',
     name: 'Off-Topic',
     channels: [
       { id: '6', name: 'memes', isPrivate: false },
       { id: '7', name: 'music', isPrivate: false },
     ]
   }
+]
+
+// DM users data
+const dmUsers = [
+  { id: 'dm1', name: 'Alice', avatar: 'https://source.unsplash.com/random/80x80?sig=11&portrait', status: 'online' as const, unreadCount: 2 },
+  { id: 'dm2', name: 'Bob', avatar: 'https://source.unsplash.com/random/80x80?sig=12&portrait', status: 'away' as const },
+  { id: 'dm3', name: 'Charlie', avatar: 'https://source.unsplash.com/random/80x80?sig=13&portrait', status: 'offline' as const },
+  { id: 'dm4', name: 'David', avatar: 'https://source.unsplash.com/random/80x80?sig=14&portrait', status: 'online' as const, unreadCount: 1 },
+  { id: 'dm5', name: 'Eve', avatar: 'https://source.unsplash.com/random/80x80?sig=15&portrait', status: 'away' as const },
 ]
 
 // Message and member data
@@ -75,9 +88,11 @@ const members = [
 export function ChatPlatform() {
   const [activeServerId, setActiveServerId] = useState(servers[0].id)
   const [activeChannelId, setActiveChannelId] = useState(categories[0].channels[0].id)
+  const [activeDMUserId, setActiveDMUserId] = useState<string | null>(null)
   const [showChannels, setShowChannels] = useState(true)
   const [showMembers, setShowMembers] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
+  const [isDMView, setIsDMView] = useState(false)
   const [currentUser, setCurrentUser] = useState({
     id: 'current',
     name: 'Current User',
@@ -95,24 +110,47 @@ export function ChatPlatform() {
     // Here you would typically update the user data on the server
   }
 
+  const toggleDMView = () => {
+    setIsDMView(!isDMView)
+    if (!isDMView) {
+      setActiveDMUserId(null)
+    } else {
+      setActiveServerId(servers[0].id)
+      setActiveChannelId(categories[0].channels[0].id)
+    }
+  }
+
   const activeServer = servers.find(s => s.id === activeServerId)
   const activeChannel = categories.flatMap(c => c.channels).find(c => c.id === activeChannelId)
+  const activeDMUser = dmUsers.find(u => u.id === activeDMUserId)
 
   return (
     <div className="flex h-screen bg-zinc-900 text-gray-100 min-w-[320px]">
       <ServerList 
         servers={servers} 
         activeServerId={activeServerId} 
-        onServerClick={setActiveServerId} 
+        onServerClick={(id) => {
+          setActiveServerId(id)
+          setIsDMView(false)
+        }}
+        onDMClick={toggleDMView}
       />
       <div className={`${showChannels ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0 w-60`}>
-        <ChannelList
-          categories={categories}
-          activeChannelId={activeChannelId}
-          onChannelClick={setActiveChannelId}
-          user={currentUser}
-          onOpenSettings={openSettings}
-        />
+        {isDMView ? (
+          <DMList
+            users={dmUsers}
+            activeUserId={activeDMUserId}
+            onUserClick={setActiveDMUserId}
+          />
+        ) : (
+          <ChannelList
+            categories={categories}
+            activeChannelId={activeChannelId}
+            onChannelClick={setActiveChannelId}
+            user={currentUser}
+            onOpenSettings={openSettings}
+          />
+        )}
       </div>
       <div className="flex-1 flex flex-col min-w-0">
         <div className="bg-zinc-800 border-b border-zinc-700 shadow-md p-2 flex items-center justify-between">
@@ -121,8 +159,19 @@ export function ChatPlatform() {
               <Menu className="h-5 w-5" />
             </Button>
             <div className="flex items-center space-x-2">
-              <Hash className="h-5 w-5 text-gray-400" />
-              <h1 className="text-lg font-semibold">{activeChannel?.name || 'Select a channel'}</h1>
+              {isDMView ? (
+                activeDMUser && (
+                  <>
+                    <UserIcon src={activeDMUser.avatar} alt={activeDMUser.name} status={activeDMUser.status} size="sm" />
+                    <h1 className="text-lg font-semibold">{activeDMUser.name}</h1>
+                  </>
+                )
+              ) : (
+                <>
+                  <Hash className="h-5 w-5 text-gray-400" />
+                  <h1 className="text-lg font-semibold">{activeChannel?.name || 'Select a channel'}</h1>
+                </>
+              )}
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -132,9 +181,11 @@ export function ChatPlatform() {
             <Button variant="ghost" size="icon">
               <Pin className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={toggleMembers}>
-              <Users className="h-5 w-5" />
-            </Button>
+            {!isDMView && (
+              <Button variant="ghost" size="icon" onClick={toggleMembers}>
+                <Users className="h-5 w-5" />
+              </Button>
+            )}
             <div className="relative">
               <input
                 type="text"
@@ -156,9 +207,11 @@ export function ChatPlatform() {
             <ChatList messages={messages} />
             <MessageInput />
           </div>
-          <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
-            <MemberList members={members} />
-          </div>
+          {!isDMView && (
+            <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
+              <MemberList members={members} />
+            </div>
+          )}
         </div>
       </div>
       {showSettings && (
