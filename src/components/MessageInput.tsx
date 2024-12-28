@@ -59,7 +59,7 @@ export function MessageInput({ onSendMessage }: MessageInputProps) {
   return (
     <div className="p-4 bg-zinc-800 border-t border-zinc-700">
       <div className="flex items-end gap-2">
-        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-300">
+        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-300 hidden sm:flex">
           <PlusCircle className="h-5 w-5" />
         </Button>
         <div className="flex-1 relative">
@@ -75,10 +75,10 @@ export function MessageInput({ onSendMessage }: MessageInputProps) {
             style={{ overflow: 'hidden' }}
           />
           <div className="absolute right-2 bottom-2 flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-300">
+            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-300 hidden sm:flex">
               <Gift className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-300">
+            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-300 hidden sm:flex">
               <ImagePlus className="h-5 w-5" />
             </Button>
             <Popover>
