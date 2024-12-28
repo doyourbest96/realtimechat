@@ -16,7 +16,7 @@ export function ChatItem({ userIcon, username, date, content, status }: ChatItem
   const RandomIcon = messageIcons[Math.floor(Math.random() * messageIcons.length)]
 
   return (
-    <div className="flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+    <div className="flex items-start space-x-4 px-4 py-2 hover:bg-zinc-800/50 rounded transition-colors duration-200">
       <UserIcon src={userIcon} alt={username} status={status} />
       <div className="flex-1 overflow-hidden">
         <div className="flex items-center justify-between">
@@ -32,7 +32,7 @@ export function ChatItem({ userIcon, username, date, content, status }: ChatItem
             </Tooltip>
           </TooltipProvider>
         </div>
-        <p className="mt-1 text-gray-700 break-words flex items-center">
+        <p className="mt-1 text-gray-300 break-words flex items-center">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
