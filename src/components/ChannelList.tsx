@@ -42,7 +42,7 @@ export function ChannelList({ categories, activeChannelId, onChannelClick, user,
   }
 
   return (
-    <div className="bg-zinc-800 text-gray-300 w-full flex flex-col h-full border-r border-zinc-700">
+    <div className="bg-zinc-800 text-gray-300 w-full flex flex-col h-full">
       <div className="p-4 border-b border-zinc-700 font-semibold">Server Name</div>
       <ScrollArea className="flex-1">
         <div className="p-2">
