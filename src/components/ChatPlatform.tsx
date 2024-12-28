@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ServerList } from './ServerList'
 import { ChannelList } from './ChannelList'
 import { DMList } from './DMList'
@@ -69,7 +69,7 @@ const generateMessages = (count: number) => {
       timestamp: new Date(Date.now() - i * 60000).toISOString(),
       content: `This is message number ${i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
       status: statuses[i % 3] as 'online' | 'offline' | 'away',
-      reactions: i % 3 === 0 ? [{ emoji: '👍', count: 2, reacted: false }] : undefined
+      reactions: i % 3 === 0 ? [{ emoji: '���', count: 2, reacted: false }] : []
     })
   }
   return messages
@@ -100,15 +100,31 @@ export function ChatPlatform() {
     status: 'online' as const
   })
   const [chatMessages, setChatMessages] = useState(messages)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const toggleChannels = () => setShowChannels(!showChannels)
-  const toggleMembers = () => setShowMembers(!showMembers)
+  const toggleMembers = () => {
+    if (isMobile) {
+      setShowMembers(!showMembers);
+      if (showChannels) setShowChannels(false);
+    } else {
+      setShowMembers(!showMembers);
+    }
+  }
   const openSettings = () => setShowSettings(true)
   const closeSettings = () => setShowSettings(false)
 
   const handleSaveSettings = (name: string, avatar: string) => {
     setCurrentUser(prev => ({ ...prev, name, avatar }))
-    // Here you would typically update the user data on the server
   }
 
   const toggleDMView = () => {
@@ -137,16 +153,16 @@ export function ChatPlatform() {
   const handleReact = (messageId: string, emoji: string) => {
     setChatMessages(prev => prev.map(msg => {
       if (msg.id === messageId) {
-        const existingReaction = msg.reactions.find(r => r.emoji === emoji)
+        const existingReaction = msg.reactions?.find(r => r.emoji === emoji)
         if (existingReaction) {
           return {
             ...msg,
-            reactions: msg.reactions.map(r => r.emoji === emoji ? { ...r, count: r.count + 1, reacted: true } : r)
+            reactions: msg.reactions?.map(r => r.emoji === emoji ? { ...r, count: r.count + 1, reacted: true } : r)
           }
         } else {
           return {
             ...msg,
-            reactions: [...msg.reactions, { emoji, count: 1, reacted: true }]
+            reactions: [...(msg.reactions || []), { emoji, count: 1, reacted: true }]
           }
         }
       }
@@ -230,7 +246,7 @@ export function ChatPlatform() {
                 <Users className="h-5 w-5" />
               </Button>
             )}
-            <div className="relative">
+            <div className="relative hidden md:block">
               <input
                 type="text"
                 placeholder="Search"
@@ -257,7 +273,7 @@ export function ChatPlatform() {
             <MessageInput onSendMessage={handleSendMessage} />
           </div>
           {!isDMView && (
-            <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0`}>
+            <div className={`${showMembers ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0 w-60 ${isMobile ? 'absolute right-0 top-0 bottom-0 z-10' : ''}`}>
               <MemberList members={members} />
             </div>
           )}
