@@ -16,7 +16,11 @@ const EMOJI_CATEGORIES = {
   '🎮': ['🎮', '🎲', '🎯', '🎳', '🎪', '🎨', '🎭', '🎪'],
 }
 
-export function MessageInput() {
+interface MessageInputProps {
+  onSendMessage: (message: string) => void
+}
+
+export function MessageInput({ onSendMessage }: MessageInputProps) {
   const [message, setMessage] = useState('')
   const [isComposing, setIsComposing] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -42,7 +46,7 @@ export function MessageInput() {
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      console.log('Sending message:', message)
+      onSendMessage(message.trim())
       setMessage('')
     }
   }
