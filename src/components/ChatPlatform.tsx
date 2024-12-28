@@ -5,9 +5,9 @@ import { ChatList } from './ChatList'
 import { MemberList } from './MemberList'
 import { UserIcon } from './UserIcon'
 import { UserSettings } from './UserSettings'
-import { Menu, Users, X } from 'lucide-react'
-import { Button } from "@/components/ui/button"
 import { MessageInput } from './MessageInput'
+import { Bell, Hash, Pin, Users, Search, Inbox, MessageCircleQuestionIcon as QuestionMarkCircle, Menu } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 
 // Server data
 const servers = [
@@ -16,21 +16,32 @@ const servers = [
   { id: '3', name: 'Design', icon: 'https://source.unsplash.com/random/80x80?sig=3&design' },
   { id: '4', name: 'Marketing', icon: 'https://source.unsplash.com/random/80x80?sig=4&marketing' },
   { id: '5', name: 'Support', icon: 'https://source.unsplash.com/random/80x80?sig=5&support' },
-  { id: '6', name: 'Coffee Break', icon: 'https://source.unsplash.com/random/80x80?sig=6&coffee' },
-  { id: '7', name: 'Brainstorming', icon: 'https://source.unsplash.com/random/80x80?sig=7&idea' },
-  { id: '8', name: 'Music', icon: 'https://source.unsplash.com/random/80x80?sig=8&music' },
-  { id: '9', name: 'Photography', icon: 'https://source.unsplash.com/random/80x80?sig=9&camera' },
-  { id: '10', name: 'Gaming', icon: 'https://source.unsplash.com/random/80x80?sig=10&game' },
 ]
 
 // Channel data
-const channels = [
-  { id: '1', name: 'general', isPrivate: false },
-  { id: '2', name: 'random', isPrivate: false },
-  { id: '3', name: 'announcements', isPrivate: false },
-  { id: '4', name: 'project-a', isPrivate: true },
-  { id: '5', name: 'project-b', isPrivate: true },
-  { id: '6', name: 'off-topic', isPrivate: false },
+const categories = [
+  {
+    name: 'General',
+    channels: [
+      { id: '1', name: 'general', isPrivate: false },
+      { id: '2', name: 'random', isPrivate: false },
+      { id: '3', name: 'announcements', isPrivate: false },
+    ]
+  },
+  {
+    name: 'Projects',
+    channels: [
+      { id: '4', name: 'project-a', isPrivate: true },
+      { id: '5', name: 'project-b', isPrivate: true },
+    ]
+  },
+  {
+    name: 'Off-Topic',
+    channels: [
+      { id: '6', name: 'memes', isPrivate: false },
+      { id: '7', name: 'music', isPrivate: false },
+    ]
+  }
 ]
 
 // Message and member data
@@ -42,9 +53,10 @@ const generateMessages = (count: number) => {
       id: i.toString(),
       userIcon: `https://source.unsplash.com/random/80x80?sig=${i}&portrait`,
       username: `User ${i}`,
-      date: new Date(Date.now() - i * 60000).toLocaleString(),
+      timestamp: new Date(Date.now() - i * 60000).toISOString(),
       content: `This is message number ${i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
       status: statuses[i % 3] as 'online' | 'offline' | 'away',
+      reactions: i % 3 === 0 ? [{ emoji: '👍', count: 2, reacted: false }] : undefined
     })
   }
   return messages
@@ -53,21 +65,16 @@ const generateMessages = (count: number) => {
 const messages = generateMessages(50)
 
 const members = [
-  { id: '1', name: 'Alice', status: 'online' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=11&portrait' },
-  { id: '2', name: 'Bob', status: 'away' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=12&portrait' },
+  { id: '1', name: 'Alice', status: 'online' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=11&portrait', role: 'admin' },
+  { id: '2', name: 'Bob', status: 'away' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=12&portrait', role: 'moderator' },
   { id: '3', name: 'Charlie', status: 'offline' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=13&portrait' },
   { id: '4', name: 'David', status: 'online' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=14&portrait' },
   { id: '5', name: 'Eve', status: 'away' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=15&portrait' },
-  { id: '6', name: 'Frank', status: 'online' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=16&portrait' },
-  { id: '7', name: 'Grace', status: 'offline' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=17&portrait' },
-  { id: '8', name: 'Henry', status: 'online' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=18&portrait' },
-  { id: '9', name: 'Ivy', status: 'away' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=19&portrait' },
-  { id: '10', name: 'Jack', status: 'offline' as const, avatar: 'https://source.unsplash.com/random/80x80?sig=20&portrait' },
 ]
 
 export function ChatPlatform() {
   const [activeServerId, setActiveServerId] = useState(servers[0].id)
-  const [activeChannelId, setActiveChannelId] = useState(channels[0].id)
+  const [activeChannelId, setActiveChannelId] = useState(categories[0].channels[0].id)
   const [showChannels, setShowChannels] = useState(true)
   const [showMembers, setShowMembers] = useState(true)
   const [showSettings, setShowSettings] = useState(false)
@@ -88,16 +95,19 @@ export function ChatPlatform() {
     // Here you would typically update the user data on the server
   }
 
+  const activeServer = servers.find(s => s.id === activeServerId)
+  const activeChannel = categories.flatMap(c => c.channels).find(c => c.id === activeChannelId)
+
   return (
-    <div className="flex h-screen bg-gray-100 min-w-[320px]">
+    <div className="flex h-screen bg-zinc-900 text-gray-100 min-w-[320px]">
       <ServerList 
         servers={servers} 
         activeServerId={activeServerId} 
         onServerClick={setActiveServerId} 
       />
-      <div className={`${showChannels ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0 w-56 md:w-64`}>
+      <div className={`${showChannels ? 'flex' : 'hidden'} md:flex flex-col flex-shrink-0 w-60`}>
         <ChannelList
-          channels={channels}
+          categories={categories}
           activeChannelId={activeChannelId}
           onChannelClick={setActiveChannelId}
           user={currentUser}
@@ -105,31 +115,39 @@ export function ChatPlatform() {
         />
       </div>
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="bg-white shadow-md p-2 md:p-4 flex items-center justify-between">
+        <div className="bg-zinc-800 border-b border-zinc-700 shadow-md p-2 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="icon" onClick={toggleChannels} className="md:hidden">
-              {showChannels ? <X size={24} /> : <Menu size={24} />}
+              <Menu className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg md:text-2xl font-bold flex items-center space-x-2">
-              <UserIcon 
-                src={servers.find(s => s.id === activeServerId)?.icon || ''} 
-                alt={servers.find(s => s.id === activeServerId)?.name || 'Server Icon'} 
-                size="sm"
-              />
-              <span>{servers.find(s => s.id === activeServerId)?.name || 'Chat Platform'}</span>
-            </h1>
+            <div className="flex items-center space-x-2">
+              <Hash className="h-5 w-5 text-gray-400" />
+              <h1 className="text-lg font-semibold">{activeChannel?.name || 'Select a channel'}</h1>
+            </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" onClick={toggleChannels} className="hidden md:flex items-center space-x-1">
-              <Menu size={16} />
-              <span>{showChannels ? 'Hide' : 'Show'} Channels</span>
+            <Button variant="ghost" size="icon">
+              <Bell className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={toggleMembers} className="hidden md:flex items-center space-x-1">
-              <Users size={16} />
-              <span>{showMembers ? 'Hide' : 'Show'} Members</span>
+            <Button variant="ghost" size="icon">
+              <Pin className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={toggleMembers} className="md:hidden">
-              <Users size={24} />
+            <Button variant="ghost" size="icon" onClick={toggleMembers}>
+              <Users className="h-5 w-5" />
+            </Button>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="bg-zinc-900 text-gray-100 pl-8 pr-2 py-1 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <Search className="h-4 w-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            </div>
+            <Button variant="ghost" size="icon">
+              <Inbox className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <QuestionMarkCircle className="h-5 w-5" />
             </Button>
           </div>
         </div>
