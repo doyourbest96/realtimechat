@@ -69,7 +69,7 @@ const generateMessages = (count: number) => {
       timestamp: new Date(Date.now() - i * 60000).toISOString(),
       content: `This is message number ${i}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
       status: statuses[i % 3] as 'online' | 'offline' | 'away',
-      reactions: i % 3 === 0 ? [{ emoji: '���', count: 2, reacted: false }] : []
+      reactions: i % 3 === 0 ? [{ emoji: '👍', count: 2, reacted: false }] : []
     })
   }
   return messages
