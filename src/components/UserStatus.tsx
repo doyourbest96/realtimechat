@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { UserIcon } from './UserIcon'
-import { Button } from "@/components/ui/button"
+import { Button } from "./ui/button"
 import { Settings } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "./ui/dropdown-menu"
 
 interface UserStatusProps {
   user: {
