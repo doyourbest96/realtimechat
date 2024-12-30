@@ -1,5 +1,5 @@
 import { UserIcon } from './UserIcon'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
 import { MessageSquare } from 'lucide-react'
 
 interface Server {
