@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Hash, Lock, ChevronDown, ChevronRight, Plus } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
+import { Button } from "./ui/button"
+import { ScrollArea } from "./ui/scroll-area"
 import { UserStatus } from './UserStatus'
 
 interface Channel {
