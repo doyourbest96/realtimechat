@@ -1,7 +1,7 @@
 import { UserIcon } from './UserIcon'
 import { Circle, Clock, MinusCircle } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
+import { ScrollArea } from "./ui/scroll-area"
 
 interface Member {
   id: string
@@ -50,7 +50,7 @@ export function MemberList({ members }: MemberListProps) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <h3 className="text-sm font-medium text-gray-400 mb-2 capitalize flex items-center cursor-help">
-                      {React.createElement(statusIcons[status], { size: 8, className: 'mr-2' })}
+                      {statusIcons[status]({ size: 8, className: 'mr-2' })}
                       {status} - {groupedMembers[status]?.length || 0}
                     </h3>
                   </TooltipTrigger>
