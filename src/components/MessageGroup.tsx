@@ -1,19 +1,19 @@
 import { useState } from 'react'
 import { UserIcon } from './UserIcon'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
 import { Smile, MoreHorizontal, Check, X, Pencil, Trash2 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "./ui/dropdown-menu"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "./ui/popover"
 
 interface Reaction {
   emoji: string

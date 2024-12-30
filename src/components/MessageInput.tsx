@@ -1,13 +1,11 @@
-'use client'
-
 import { useState, useRef, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
+import { Button } from "./ui/button"
 import { PlusCircle, Smile, Gift, ImagePlus, Send } from 'lucide-react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "./ui/popover"
 
 const EMOJI_CATEGORIES = {
   '😀': ['😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊'],
