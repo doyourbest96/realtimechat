@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useElementOnScreen } from '../utils/useElementOnScreen'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip"
 import { User } from 'lucide-react'
 
 interface UserIconProps {
@@ -13,11 +12,6 @@ interface UserIconProps {
 
 export function UserIcon({ src, alt, status, size = 'md' }: UserIconProps) {
   const [imageError, setImageError] = useState(false)
-  const [containerRef, isVisible] = useElementOnScreen({
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.5,
-  })
 
   const variants = {
     visible: { 
@@ -39,13 +33,13 @@ export function UserIcon({ src, alt, status, size = 'md' }: UserIconProps) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div ref={containerRef} className="relative">
+          <div className="relative">
             <motion.div
-              className={`w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center bg-gray-100 ${
+              className={`rounded-full border-2 border-gray-200 flex items-center justify-center bg-gray-100 ${
                 size === 'sm' ? 'w-8 h-8' : size === 'lg' ? 'w-12 h-12' : 'w-10 h-10'
               }`}
               initial="hidden"
-              animate={isVisible ? 'visible' : 'hidden'}
+              animate="visible"
               variants={variants}
             >
               {!imageError ? (
