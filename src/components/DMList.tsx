@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { UserIcon } from './UserIcon'
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "./ui/button"
+import { ScrollArea } from "./ui/scroll-area"
 import { Search, Plus } from 'lucide-react'
 
 interface DMUser {
